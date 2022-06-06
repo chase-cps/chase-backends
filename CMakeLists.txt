@@ -10,6 +10,9 @@ set(CMAKE_C_FLAGS_RELEASE "-O3 -fPIC")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -Wextra -pedantic -ggdb -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3  -fPIC")
 
+set(CMAKE_INSTALL_PREFIX ../../install_dir CACHE PATH "Install top-level directory" FORCE)
+
+
 
 find_package(PythonLibs REQUIRED)
 find_package(pybind11 REQUIRED)
