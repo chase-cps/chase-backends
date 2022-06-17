@@ -105,7 +105,7 @@ void SlugsPrinter::_printInit() {
 
     auto assumptions = formulae->second;
 
-    if( assumptions->IsA() == large_boolean_formula_node ) {
+    if( assumptions->IsA() == largeBooleanFormula_node ) {
         auto lbf = reinterpret_cast< LargeBooleanFormula * >(assumptions);
         if( lbf->getOp() != op_and )
             messageError("Not a GR1 Specification.");
@@ -136,7 +136,7 @@ void SlugsPrinter::_printInit() {
 
     auto guarantees = formulae->second;
 
-    if( guarantees->IsA() == large_boolean_formula_node ) {
+    if( guarantees->IsA() == largeBooleanFormula_node ) {
         auto lbf = reinterpret_cast< LargeBooleanFormula * >(guarantees);
         if( lbf->getOp() != op_and )
             messageError("Not a GR1 Specification.");
@@ -167,7 +167,7 @@ void SlugsPrinter::_printSafety() {
 
     auto assumptions = formulae->second;
 
-    if( assumptions->IsA() == large_boolean_formula_node ) {
+    if( assumptions->IsA() == largeBooleanFormula_node ) {
         auto lbf = reinterpret_cast< LargeBooleanFormula * >(assumptions);
         if( lbf->getOp() != op_and )
             messageError("Not a GR1 Specification.");
@@ -211,7 +211,7 @@ void SlugsPrinter::_printSafety() {
 
     auto guarantees = formulae->second;
 
-    if( guarantees->IsA() == large_boolean_formula_node ) {
+    if( guarantees->IsA() == largeBooleanFormula_node ) {
         auto lbf = reinterpret_cast< LargeBooleanFormula * >(guarantees);
         if (lbf->getOp() != op_and)
             messageError("Not a GR1 Specification.");
@@ -248,7 +248,7 @@ void SlugsPrinter::_printLiveness() {
 
     auto assumptions = formulae->second;
 
-    if( assumptions->IsA() == large_boolean_formula_node ) {
+    if( assumptions->IsA() == largeBooleanFormula_node ) {
         auto lbf = reinterpret_cast< LargeBooleanFormula * >(assumptions);
         if (lbf->getOp() != op_and)
             messageError("Not a GR1 Specification.");
@@ -284,7 +284,7 @@ void SlugsPrinter::_printLiveness() {
 
     auto guarantees = formulae->second;
 
-    if( guarantees->IsA() == large_boolean_formula_node ) {
+    if( guarantees->IsA() == largeBooleanFormula_node ) {
         auto lbf = reinterpret_cast< LargeBooleanFormula * >(guarantees);
         if( lbf->getOp() != op_and )
             messageError("Not a GR1 Specification.");

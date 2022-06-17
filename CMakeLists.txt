@@ -10,16 +10,19 @@ set(CMAKE_C_FLAGS_RELEASE "-O3 -fPIC")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -Wextra -pedantic -ggdb -fPIC")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3  -fPIC")
 
-set(CMAKE_INSTALL_PREFIX ../../install_dir CACHE PATH "Install top-level directory" FORCE)
+if(DEFINED ENV{CHASE_INSTALL_DIR})
+    set(CMAKE_INSTALL_PREFIX $ENV{CHASE_INSTALL_DIR} CACHE PATH "Install top-level directory" FORCE)
+else()
+    set(CMAKE_INSTALL_PREFIX ../../install_dir CACHE PATH "Install top-level directory" FORCE)
+endif()
 
-
+project(CHASE_BACKENDS VERSION 1.0)
 
 find_package(PythonLibs REQUIRED)
 find_package(pybind11 REQUIRED)
 
-project(CHASE_BACKENDS VERSION 1.0)
 
-set(CHASEPATH ../../install_dir CACHE PATH "The path of the Chase installation")
+set(CHASEPATH ${CMAKE_INSTALL_PREFIX} CACHE PATH "The path of the Chase installation")
 
 set( BACKENDS_SRC ${PROJECT_SOURCE_DIR}/src)
 

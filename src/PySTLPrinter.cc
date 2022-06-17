@@ -83,7 +83,7 @@ void PySTLPrinter::printAssumptions()
     if(assumptions != _contract->assumptions.end())
     {
         auto spec = assumptions->second;
-        if(spec->IsA() == large_boolean_formula_node)
+        if(spec->IsA() == largeBooleanFormula_node)
             _printLargeFormula(reinterpret_cast<LargeBooleanFormula*>(spec));
         else
             _fout << spec->getString();
@@ -100,7 +100,7 @@ void PySTLPrinter::printGuarantees()
     if(guarantees != _contract->guarantees.end())
     {
         auto spec = guarantees->second;
-        if(spec->IsA() == large_boolean_formula_node)
+        if(spec->IsA() == largeBooleanFormula_node)
             _printLargeFormula(reinterpret_cast<LargeBooleanFormula*>(spec));
         else
             _fout << spec->getString();
