@@ -3,7 +3,7 @@
 # @author Michele Lora
 ###############################################################################
 
-cmake_minimum_required (VERSION 3.10)
+cmake_minimum_required (VERSION 3.18)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 endif()
@@ -20,7 +20,9 @@ endif()
 
 project(CHASE_BACKENDS VERSION 1.0)
 
-find_package(PythonLibs REQUIRED)
+# Use one Python for the headers and the module suffix (FindPython).
+find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
+set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 REQUIRED)
 
 
