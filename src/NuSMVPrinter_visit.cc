@@ -21,7 +21,7 @@ int NuSMVPrinter::visitIdentifier(Identifier &identifier) {
     std::string name = identifier.getDeclaration()->getName()->getString();
     if (!identifier.isPrimed()) _fout << identifier.getString();
     else {
-        _fout << "X(" << name << ")";
+        _fout << "next(" << name << ")";
     }
     return GuideVisitor::visitIdentifier(identifier);
 }
