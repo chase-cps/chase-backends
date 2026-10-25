@@ -61,6 +61,13 @@ namespace chase {
         /// @brief Procedure printing the variables declarations.
         void _printDeclarations();
 
+        /// @brief Checks that every assumption and guarantee is a GR(1)
+        /// term: a formula without temporal operators (initial condition),
+        /// G f where f has no temporal operators but X (safety), or G F f
+        /// where f has no temporal operators but X (liveness). Raises an error
+        /// otherwise, instead of printing a different formula.
+        void _checkGR1();
+
         /// @brief Procedure printing the Initial conditions of the GR1 spec.
         void _printInit();
         /// @brief Procedure printing the Safety conditions of the GR1 spec.

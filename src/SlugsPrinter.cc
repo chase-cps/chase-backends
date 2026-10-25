@@ -24,6 +24,7 @@ void SlugsPrinter::print(Contract *contract, std::string path)
 {
     // Open the file and get the contract to be printed.
     _contract = contract;
+    _checkGR1();
     fout.open(path);
 
     // Print the declarations.
@@ -38,6 +39,75 @@ void SlugsPrinter::print(Contract *contract, std::string path)
 
 }
 
+
+
+// True if the formula contains a temporal operator; X is allowed when
+// allowNext is set. The node types are tested with IsA(): the formulas may
+// come from another module, where dynamic_cast does not work.
+static bool hasTemporal(LogicFormula * f, bool allowNext)
+{
+    if(f == nullptr) return false;
+    switch(f->IsA()) {
+        case unaryTemporalOperation_node: {
+            auto u = reinterpret_cast< UnaryTemporalFormula * >(f);
+            if(u->getOp() == op_next && allowNext)
+                return hasTemporal(u->getFormula(), allowNext);
+            return true;
+        }
+        case binaryTemporalOperation_node:
+            return true;
+        case unaryBooleanOperation_node:
+            return hasTemporal(
+                reinterpret_cast< UnaryBooleanFormula * >(f)->getOp1(), allowNext);
+        case binaryBooleanOperation_node: {
+            auto b = reinterpret_cast< BinaryBooleanFormula * >(f);
+            return hasTemporal(b->getOp1(), allowNext) ||
+                   hasTemporal(b->getOp2(), allowNext);
+        }
+        case largeBooleanFormula_node:
+            for(auto o : reinterpret_cast< LargeBooleanFormula * >(f)->operands)
+                if(hasTemporal(o, allowNext)) return true;
+            return false;
+        default:
+            return false;
+    }
+}
+
+static void checkGR1Term(LogicFormula * t)
+{
+    // Initial condition.
+    if(!hasTemporal(t, false)) return;
+    if(t->IsA() == unaryTemporalOperation_node) {
+        auto g = reinterpret_cast< UnaryTemporalFormula * >(t);
+        if(g->getOp() == op_globally) {
+            auto f = g->getFormula();
+            // Liveness: G F f, f may refer to the next step as in slugs.
+            if(f->IsA() == unaryTemporalOperation_node) {
+                auto u = reinterpret_cast< UnaryTemporalFormula * >(f);
+                if(u->getOp() == op_future && !hasTemporal(u->getFormula(), true))
+                    return;
+            }
+            // Safety: G f, with X only.
+            if(!hasTemporal(f, true)) return;
+        }
+    }
+    messageError("Not a GR1 Specification: " + t->getString());
+}
+
+void SlugsPrinter::_checkGR1()
+{
+    for(auto part : {&_contract->assumptions, &_contract->guarantees}) {
+        auto formulae = part->find(logic);
+        if(formulae == part->end()) continue;
+        auto f = reinterpret_cast< LogicFormula * >(formulae->second);
+        if(f->IsA() == largeBooleanFormula_node &&
+           reinterpret_cast< LargeBooleanFormula * >(f)->getOp() == op_and)
+            for(auto o : reinterpret_cast< LargeBooleanFormula * >(f)->operands)
+                checkGR1Term(o);
+        else
+            checkGR1Term(f);
+    }
+}
 
 
 void SlugsPrinter::_printDeclarations()
