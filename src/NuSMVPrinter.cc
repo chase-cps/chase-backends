@@ -33,12 +33,20 @@ void NuSMVPrinter::print(Contract *contract)
 void NuSMVPrinter::printDeclarations() {
     _fout << "MODULE main" << std::endl;
     _fout << "VAR" << std::endl;
+    std::vector<Constant *> constants;
     for (auto & declaration : _contract->declarations)
     {
-        /// \todo Support for constants.
+        if( declaration->IsA() == constant_node )
+            constants.push_back(reinterpret_cast<Constant*>(declaration));
         if( declaration->IsA() != variable_node ) continue;
         auto var = reinterpret_cast<Variable*>(declaration);
         var->accept_visitor(*this);
+    }
+    for (auto c : constants)
+    {
+        _fout << "DEFINE " << c->getName()->getString() << " := ";
+        c->getValue()->accept_visitor(*this);
+        _fout << ";" << std::endl;
     }
     for (auto var : _boundedReals)
     {
