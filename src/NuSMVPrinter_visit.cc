@@ -64,6 +64,7 @@ int NuSMVPrinter::visitVariable(Variable &variable) {
     if (type->IsA() == real_node)
     {
         _fout << "\t" << name << " : real;" << std::endl;
+        _realVariable = true;
         auto r = reinterpret_cast< Real * >(type);
         if (r->getMin() > -infinity || r->getMax() < infinity)
             _boundedReals.push_back(&variable);

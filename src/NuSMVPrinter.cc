@@ -10,9 +10,33 @@
 
 using namespace chase;
 
+namespace {
+    // Finds the real types and the real numbers in what it visits.
+    class RealFinder : public GuideVisitor {
+    public:
+        bool found = false;
+        int visitReal(Real &) override { found = true; return 1; }
+        int visitRealValue(RealValue &) override { found = true; return 1; }
+    };
+}
+
+bool chase::needsNuXmv(Contract *contract)
+{
+    RealFinder finder;
+    for (auto & declaration : contract->declarations)
+        declaration->accept_visitor(finder);
+    for (auto & spec : contract->assumptions)
+        spec.second->accept_visitor(finder);
+    for (auto & spec : contract->guarantees)
+        spec.second->accept_visitor(finder);
+    return finder.found;
+}
+
 NuSMVPrinter::NuSMVPrinter( std::string path ) :
     GuideVisitor(),
-    _contract(nullptr)
+    _contract(nullptr),
+    _reals(false),
+    _realVariable(false)
 {
     _fout.open(path);
 }
@@ -25,6 +49,12 @@ NuSMVPrinter::~NuSMVPrinter()
 void NuSMVPrinter::print(Contract *contract)
 {
     _contract = contract;
+    _reals = needsNuXmv(contract);
+    _realVariable = false;
+    if (_reals)
+        _fout << "-- Real variables or real numbers: NuSMV cannot read this file.\n"
+              << "-- Check it with nuXmv: read_model, go_msat, check_ltlspec_ic3\n"
+              << "-- (or msat_check_ltlspec_bmc -k 20).\n";
     printDeclarations();
     printAssumptions();
     printGuarantees();
@@ -42,6 +72,9 @@ void NuSMVPrinter::printDeclarations() {
         auto var = reinterpret_cast<Variable*>(declaration);
         var->accept_visitor(*this);
     }
+    // go_msat needs a variable with an infinite domain.
+    if (_reals && !_realVariable)
+        _fout << "\tchase_real : real;" << std::endl;
     for (auto c : constants)
     {
         _fout << "DEFINE " << c->getName()->getString() << " := ";

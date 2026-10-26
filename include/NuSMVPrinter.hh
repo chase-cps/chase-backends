@@ -20,6 +20,10 @@ namespace chase {
     /// @brief A real number in the syntax of nuXmv, exactly.
     std::string realText(double value);
 
+    /// @brief True when the contract has real variables or real numbers.
+    /// NuSMV cannot read such a file: nuXmv checks it with go_msat.
+    bool needsNuXmv(Contract * contract);
+
     class NuSMVPrinter : public GuideVisitor {
     public:
         /// @brief Constructor.
@@ -66,6 +70,10 @@ namespace chase {
         std::ofstream _fout;
         /// @brief The real variables with a range, bounded with INVAR.
         std::vector<Variable *> _boundedReals;
+        /// @brief Whether the contract needs nuXmv (see needsNuXmv).
+        bool _reals;
+        /// @brief Whether a real variable has been declared.
+        bool _realVariable;
 
 
 
