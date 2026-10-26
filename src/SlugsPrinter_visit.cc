@@ -47,11 +47,14 @@ int SlugsPrinter::visitProposition(Proposition &o)
     {
         reinterpret_cast<Expression*>(o.getValue())->accept_visitor(*this);
     }
+    else
+        messageError("Unsupported proposition: " + o.getString());
     return 1;
 }
 
 int SlugsPrinter::visitBooleanConstant(BooleanConstant &o) {
-    return GuideVisitor::visitBooleanConstant(o);
+    _curr += o.getValue() ? "TRUE" : "FALSE";
+    return 1;
 }
 
 int SlugsPrinter::visitBinaryBooleanOperation(BinaryBooleanFormula &o) {
@@ -83,6 +86,24 @@ int SlugsPrinter::visitBinaryBooleanOperation(BinaryBooleanFormula &o) {
             break;
     }
     _continueVisit(o.getOp2());
+    _curr += ")";
+    return 1;
+}
+
+int SlugsPrinter::visitLargeBooleanFormula(LargeBooleanFormula &o) {
+    std::string op;
+    if(o.getOp() == op_and) op = " & ";
+    else if(o.getOp() == op_or) op = " | ";
+    else messageError("Operator not supported.");
+    if(o.operands.empty()) {
+        _curr += o.getOp() == op_and ? "TRUE" : "FALSE";
+        return 1;
+    }
+    _curr += "(";
+    for(size_t i = 0; i < o.operands.size(); ++i) {
+        if(i > 0) _curr += op;
+        _continueVisit(o.operands[i]);
+    }
     _curr += ")";
     return 1;
 }
@@ -219,8 +240,13 @@ int SlugsPrinter::_continueVisit(ChaseObject *o) {
             v->accept_visitor(*this);
             break;
         }
+        case largeBooleanFormula_node: {
+            auto v = reinterpret_cast< LargeBooleanFormula *>(o);
+            v->accept_visitor(*this);
+            break;
+        }
         default:
-            messageError("Unsupported formula.");
+            messageError("Unsupported formula: " + o->getString());
             break;
     }
     return 1;

@@ -100,12 +100,14 @@ void SlugsPrinter::_checkGR1()
         auto formulae = part->find(logic);
         if(formulae == part->end()) continue;
         auto f = reinterpret_cast< LogicFormula * >(formulae->second);
-        if(f->IsA() == largeBooleanFormula_node &&
-           reinterpret_cast< LargeBooleanFormula * >(f)->getOp() == op_and)
-            for(auto o : reinterpret_cast< LargeBooleanFormula * >(f)->operands)
-                checkGR1Term(o);
-        else
-            checkGR1Term(f);
+        // The sections below print the operands of a conjunction; anything
+        // else would be left out of the file.
+        if(f->IsA() != largeBooleanFormula_node ||
+           reinterpret_cast< LargeBooleanFormula * >(f)->getOp() != op_and)
+            messageError("Not a GR1 Specification: expected a conjunction of terms: "
+                         + f->getString());
+        for(auto o : reinterpret_cast< LargeBooleanFormula * >(f)->operands)
+            checkGR1Term(o);
     }
 }
 

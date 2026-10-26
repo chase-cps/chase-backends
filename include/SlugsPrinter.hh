@@ -40,6 +40,7 @@ namespace chase {
         int visitBooleanConstant(BooleanConstant &o) override;
         int visitBinaryBooleanOperation(BinaryBooleanFormula &o) override;
         int visitUnaryBooleanOperation(UnaryBooleanFormula &o) override;
+        int visitLargeBooleanFormula(LargeBooleanFormula &o) override;
         int visitUnaryTemporalOperation(UnaryTemporalFormula &o) override;
         int visitBinaryTemporalOperation(BinaryTemporalFormula &o) override;
 

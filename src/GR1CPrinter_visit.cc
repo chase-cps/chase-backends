@@ -75,7 +75,8 @@ int GR1CPrinter::visitProposition(Proposition &o)
 }
 
 int GR1CPrinter::visitBooleanConstant(BooleanConstant &o) {
-    return GuideVisitor::visitBooleanConstant(o);
+    _curr += o.getValue() ? "True" : "False";
+    return 1;
 }
 
 int GR1CPrinter::visitBinaryBooleanOperation(BinaryBooleanFormula &o) {
