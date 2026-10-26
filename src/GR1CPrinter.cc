@@ -39,6 +39,17 @@ void GR1CPrinter::print(Contract *contract, std::string path)
 
 void GR1CPrinter::_printDeclarations()
 {
+    // GR(1) synthesis is finite-state: a real variable would be written as a
+    // Boolean one.
+    for (auto & declaration : _contract->declarations)
+    {
+        if (declaration->IsA() != variable_node) continue;
+        auto var = reinterpret_cast<Variable *>(declaration);
+        if (var->getType()->IsA() == real_node)
+            messageError("The real variable " + var->getName()->getString() +
+                         " cannot be written for gr1c: GR(1) synthesis is finite-state.");
+    }
+
     // Print the environment variables.
     fout << "ENV:" << std::endl;
     for( auto vit = _contract->declarations.begin();

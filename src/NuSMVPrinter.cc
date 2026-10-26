@@ -40,6 +40,16 @@ void NuSMVPrinter::printDeclarations() {
         auto var = reinterpret_cast<Variable*>(declaration);
         var->accept_visitor(*this);
     }
+    for (auto var : _boundedReals)
+    {
+        auto r = reinterpret_cast<Real *>(var->getType());
+        std::string name = var->getName()->getString();
+        if (r->getMin() > -infinity)
+            _fout << "INVAR " << name << " >= " << realText(r->getMin()) << ";" << std::endl;
+        if (r->getMax() < infinity)
+            _fout << "INVAR " << name << " <= " << realText(r->getMax()) << ";" << std::endl;
+    }
+    _boundedReals.clear();
 }
 
 void NuSMVPrinter::printAssumptions()

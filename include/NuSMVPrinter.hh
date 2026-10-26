@@ -12,9 +12,13 @@
 #include "GuideVisitor.hh"
 #include "representation/Operators.hh"
 #include <fstream>
+#include <vector>
 
 
 namespace chase {
+
+    /// @brief A real number in the syntax of nuXmv, exactly.
+    std::string realText(double value);
 
     class NuSMVPrinter : public GuideVisitor {
     public:
@@ -51,6 +55,7 @@ namespace chase {
         int visitBinaryTemporalOperation(BinaryTemporalFormula &formula) override;
         int visitExpression(Expression &expression) override;
         int visitIntegerValue(IntegerValue &value) override;
+        int visitRealValue(RealValue &value) override;
         /// @endcond
 
     protected:
@@ -59,6 +64,8 @@ namespace chase {
         Contract * _contract;
         /// @brief The file to print.
         std::ofstream _fout;
+        /// @brief The real variables with a range, bounded with INVAR.
+        std::vector<Variable *> _boundedReals;
 
 
 

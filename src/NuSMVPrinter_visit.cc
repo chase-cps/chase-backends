@@ -7,7 +7,22 @@
 
 #include "NuSMVPrinter.hh"
 
+#include <cstdio>
+#include <cstdlib>
+
 using namespace chase;
+
+// The shortest decimal that reads back as the same double (0.1 rather than
+// 0.100000), always with a dot: nuXmv reads 20 as an integer.
+std::string chase::realText(double value)
+{
+    char text[512];
+    for (int digits = 1; digits < 400; ++digits) {
+        std::snprintf(text, sizeof(text), "%.*f", digits, value);
+        if (std::strtod(text, nullptr) == value) break;
+    }
+    return text;
+}
 
 int NuSMVPrinter::visitBooleanValue(BooleanValue &value) {
     if(value.getValue() == true)
@@ -29,8 +44,8 @@ int NuSMVPrinter::visitIdentifier(Identifier &identifier) {
 int NuSMVPrinter::visitVariable(Variable &variable) {
     auto type = variable.getType();
     auto name = variable.getName()->getString();
-    /// \todo Add support for integers.
-    if (!(type->IsA() == boolean_node || type->IsA() == integer_node))
+    if (!(type->IsA() == boolean_node || type->IsA() == integer_node ||
+          type->IsA() == real_node))
         messageError(
                 "Trying to use a non supported type variable in NuSMV. " + name);
 
@@ -44,6 +59,14 @@ int NuSMVPrinter::visitVariable(Variable &variable) {
         auto i = reinterpret_cast< Integer * >(type);
         _fout << i->getMin() << ".."
             << i->getMax() << ";" << std::endl;
+    }
+    // Real variables need nuXmv (go_msat, then check_ltlspec_ic3).
+    if (type->IsA() == real_node)
+    {
+        _fout << "\t" << name << " : real;" << std::endl;
+        auto r = reinterpret_cast< Real * >(type);
+        if (r->getMin() > -infinity || r->getMax() < infinity)
+            _boundedReals.push_back(&variable);
     }
 
     return GuideVisitor::visitVariable(variable);
@@ -164,6 +187,11 @@ int NuSMVPrinter::visitExpression(Expression &expression) {
 
 int NuSMVPrinter::visitIntegerValue(IntegerValue &value) {
     _fout << value.getString();
+    return 1;
+}
+
+int NuSMVPrinter::visitRealValue(RealValue &value) {
+    _fout << realText(value.getValue());
     return 1;
 }
 
