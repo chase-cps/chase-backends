@@ -45,6 +45,11 @@ namespace chase {
         /// @brief Procedure printing the LTL for the consistency operation.
         void printGuarantees();
 
+        /// @brief Procedure printing one more LTLSPEC, after print.
+        /// @param formula The formula of the specification.
+        /// @param comment A line of comment printed before it (none if empty).
+        void printSpec(LogicFormula * formula, const std::string & comment = "");
+
         /// @cond
         // Visit functions.
         int visitBooleanValue(BooleanValue &value) override;

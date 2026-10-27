@@ -121,6 +121,15 @@ void NuSMVPrinter::printGuarantees()
     _fout << " )\n\n";
 }
 
+void NuSMVPrinter::printSpec(LogicFormula * formula, const std::string & comment)
+{
+    if (!comment.empty())
+        _fout << "\t-- " << comment << std::endl;
+    _fout << "\tLTLSPEC (" << std::endl << "\t\t";
+    formula->accept_visitor(*this);
+    _fout << " )\n\n";
+}
+
 std::string NuSMVPrinter::_printBooleanOperator(BooleanOperator op) {
     std::string sop;
     switch(op)
