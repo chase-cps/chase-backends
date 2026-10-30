@@ -6,11 +6,14 @@
  */
 #include "GR1CPrinter.hh"
 
+#include <cstdio>
+
 using namespace chase;
 
 GR1CPrinter::GR1CPrinter() :
     GuideVisitor(),
-    _inNext(false)
+    _inNext(false),
+    _unsupported(false)
 {
 }
 
@@ -33,6 +36,14 @@ void GR1CPrinter::print(Contract *contract, std::string path)
     _printSafety();
     _printLiveness();
 
+    // A file with a relation left out would say another specification.
+    if (_unsupported) {
+        fout.close();
+        std::remove(path.c_str());
+        messageWarning("The specification for gr1c was not written: gr1c compares "
+                       "an integer only with a constant. chase_cps.to_gr1(c, "
+                       "format=\"gr1c\") in Python writes such relations as values.");
+    }
 }
 
 

@@ -32,6 +32,7 @@ int GR1CPrinter::visitExpression(Expression &o) {
         else
         {
             /// \todo Unroll the expression.
+            _unsupported = true;
             messageWarning(
                     std::string("Impossible to generate GR1C description.\n")
                 + "Unsupported expression: " + op2->getString());
@@ -40,6 +41,7 @@ int GR1CPrinter::visitExpression(Expression &o) {
     else
     {
         /// \todo Unroll the expression.
+        _unsupported = true;
         messageWarning(
                 std::string("Impossible to generate GR1C description.\n")
                 + "Unsupported expression: " + o.getString());

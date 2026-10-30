@@ -53,6 +53,9 @@ namespace chase {
 
         bool _inNext;
 
+        /// @brief A relation that gr1c cannot read was met: nothing is written.
+        bool _unsupported;
+
         /// @brief Procedure printing the variables declarations.
         void _printDeclarations();
 
